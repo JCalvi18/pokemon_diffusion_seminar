@@ -11,4 +11,4 @@ TODO
 ## Objectives 
 - Implements Forward pass (Noiser)
 - Implement U-NET
-- Define Loss w.r.t to the paper
+- Define Loss w.r.t. the paper
