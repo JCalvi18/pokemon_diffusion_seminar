@@ -6,7 +6,7 @@ Proyect for the seminar "Deep Generative Diffusion Models" - Saarland University
 - Pytorch 1.13
 
 ## Installation guide for developer
-- Install [miniconda] 🐍(https://conda.io/projects/conda/en/stable/user-guide/install/macos.html)
+- Install [miniconda] (https://conda.io/projects/conda/en/stable/user-guide/install/macos.html) 🐍
 - Create a new enronment 
 ```
     conda create --name diffusion python=3.10
