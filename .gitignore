@@ -4,7 +4,10 @@ __pycache__/
 *$py.class
 
 #Dataset
-./pokemon
+pokemon
+
+# Pycharm
+.idea
 
 # C extensions
 *.so

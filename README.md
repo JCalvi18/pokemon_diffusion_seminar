@@ -3,7 +3,7 @@ Proyect for the seminar "Deep Generative Diffusion Models" - Saarland University
 
 ## Enviroment
 - Python 3.10
-- Pytorch 1.13
+- Pytorch 2.0
 
 ## Installation guide for developer
 - Install [miniconda](https://conda.io/projects/conda/en/stable/user-guide/install/macos.html) 🐍
