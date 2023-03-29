@@ -25,7 +25,7 @@ def prepare_data (batch_size=64):
     ])
 
     dataset = PokemonDataset ('./pokemon', transform = input_transform)
-    train_dataloader = DataLoader (dataset, batch_size = 64, shuffle = True)
+    train_dataloader = DataLoader (dataset, batch_size = batch_size, shuffle = True)
     return train_dataloader
 
 

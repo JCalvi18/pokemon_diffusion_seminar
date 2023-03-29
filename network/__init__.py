@@ -1,1 +1,1 @@
-from mlp import MLP
+from .simpleUnet import SimpleUnet

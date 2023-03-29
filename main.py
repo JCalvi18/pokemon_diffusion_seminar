@@ -7,12 +7,12 @@ if __name__ == "__main__":
                          help = "Total number of timesteps"),
     parser.add_argument ("-e", "--epochs", dest = "epochs", type = int,
                          help = "Total number of Epochs"),
-    parser.add_argument ("-lr", dest = "lr", type = float,
+    parser.add_argument ("-lr", dest = "lr", type = float, default = 1e-3,
                          help = "Learning rate"),
     parser.add_argument ("-b", "--batch", dest = "batch", type = int,
                          help = "Nu,ber of batches to use"),
 
-    parser.add_argument ("-tr", "--train", type = bool,
+    parser.add_argument ("-tr", "--train",
                          action = "store_true", dest = "mode_training", default = False,
                          help = "Use training mode")
 
