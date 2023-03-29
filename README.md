@@ -22,6 +22,7 @@ Proyect for the seminar "Deep Generative Diffusion Models" - Saarland University
 - Install additionall libraries
   ```
     conda install matplotlib tqdm
+    conda install -c conda-forge einops
     ```
 
 ### Further considerations
