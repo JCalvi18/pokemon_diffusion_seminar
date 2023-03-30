@@ -35,7 +35,7 @@ def train_loop (args):
     train_dataloader = prepare_data (dataset_path, batch_size)
 
     for epoch in tqdm (range (epochs)):
-        for step, img_batch in tqdm (enumerate (train_dataloader), total = len (train_dataloader)):
+        for step, img_batch in tqdm (enumerate (train_dataloader), total = len (train_dataloader), leave = False):
             optimizer.zero_grad ()
             # Sample t uniformally for every sample in the batch
             t = torch.randint (0, total_timesteps, (batch_size,), device = device).long ()
