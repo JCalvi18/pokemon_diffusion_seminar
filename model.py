@@ -118,6 +118,5 @@ class Model (object):
         torch.save (self.network.state_dict (), f'{network_folder}/epoch-{checkpoint}.pth')
 
     def load_model(self, path:str):
-        network_folder = Path(f"{path}/network")
-        self.network.load_state_dict(torch.load(network_folder))
+        self.network.load_state_dict(torch.load(path))
         self.network.eval()
