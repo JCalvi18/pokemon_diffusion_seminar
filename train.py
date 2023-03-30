@@ -17,7 +17,7 @@ def train_loop (args):
 
 
     # TODO define network here
-    network = SimpleUnet()
+    network = SimpleUnet().to(device)
     optimizer = Adam (network.parameters (), lr = lr)
     model = Model (network, total_timesteps)
 
