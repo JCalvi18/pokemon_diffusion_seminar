@@ -54,7 +54,7 @@ def train_loop (args):
 def generate(args):
     load_path = args.load_path
     batch_size = args.batch
-    total_timesteps = args.total_timesteps
+    total_timesteps = args.timesteps
 
 
     torch.manual_seed(args.seed)
