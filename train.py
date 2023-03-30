@@ -13,13 +13,15 @@ def train_loop (args):
     epochs = args.epochs
     lr = args.lr
     batch_size = args.batch
+    dataset_path = args.dataset_path
+
 
     # TODO define network here
     network = SimpleUnet()
     optimizer = Adam (network.parameters (), lr = lr)
     model = Model (network, total_timesteps)
 
-    train_dataloader = prepare_data (batch_size)
+    train_dataloader = prepare_data (dataset_path, batch_size)
 
     for epoch in tqdm(range(epochs)):
         for step, img_batch in tqdm(enumerate(train_dataloader), total = len(train_dataloader)):

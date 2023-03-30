@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 matplotlib.use ('TkAgg')
 
 
-def prepare_data (batch_size=64):
+def prepare_data (path, batch_size=64):
     """
     Construct input pipeline using custom dataset and transformations
     :param batch_size: size of each batch
@@ -24,7 +24,7 @@ def prepare_data (batch_size=64):
         transforms.Lambda (lambda img: (img * 2) - 1)  # In range [-1,1]
     ])
 
-    dataset = PokemonDataset ('./pokemon', transform = input_transform)
+    dataset = PokemonDataset (path, transform = input_transform)
     train_dataloader = DataLoader (dataset, batch_size = batch_size, shuffle = True)
     return train_dataloader
 
