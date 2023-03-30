@@ -4,6 +4,7 @@ import torch
 from torch import Tensor, rand_like, randn
 import torch.nn.functional as F
 from tqdm import tqdm
+from pathlib import Path
 
 
 class Model (object):
@@ -11,7 +12,7 @@ class Model (object):
     Class in charge of executing the forward and backward processes
     """
 
-    def __init__ (self, network, total_timesteps: int):
+    def __init__ (self, network: torch.nn.Module, total_timesteps: int):
         self.total_timesteps = total_timesteps
         self.betas = beta_scheduler (total_timesteps)
         cumulative = get_cumulative (self.betas)
@@ -21,8 +22,8 @@ class Model (object):
         self.sqrt_inv_alphas = cumulative [2]
         self.sqrt_one_minus_alphas_cumprod = cumulative [3]
         self.posterior_variance = cumulative [4]
-        # TODO intilize the U-Net
-        self.network = network
+
+        self.network: torch.nn.Module = network
 
     def forward_sample (self, x: Tensor, t: Tensor, noise: Tensor):
         """
@@ -110,3 +111,9 @@ class Model (object):
             result.append (sample.cpu ().numpy ())
 
         return result
+
+    def save_model (self, results_folder, checkpoint: int):
+
+        network_folder = Path (f"{results_folder}/network")
+        network_folder.mkdir (parents = True, exist_ok = True)
+        torch.save (self.network.state_dict (), f'{network_folder}/epoch-{checkpoint}.pth')
