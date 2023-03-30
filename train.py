@@ -58,6 +58,7 @@ def train_loop(args):
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
     results_folder = Path(f"./results/gen/{timedate_stamp}/init")
+    results_folder.mkdir (parents = True, exist_ok = True)
     save_to_png(results_folder, results[0])
 
 def generate(args):
