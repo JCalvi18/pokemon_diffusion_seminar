@@ -2,7 +2,7 @@ import torch
 from torch.optim import Adam
 from model import Model
 from network import SimpleUnet
-from dataset import prepare_data, output_to_image
+from dataset import prepare_data, save_to_png
 from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
@@ -68,6 +68,6 @@ def generate(args):
 
     output_dim = (batch_size, 4, 256, 256)
     results = model.inference_loop(output_dim)
-    img = output_to_image(results[-1])
-    print(img)
+    save_to_png(results_folder, results[-1])
+
 
