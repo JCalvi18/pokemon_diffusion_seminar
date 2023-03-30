@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from train import train_loop
+from train import train_loop, generate
 
 if __name__ == "__main__":
     parser = ArgumentParser ()
@@ -15,6 +15,9 @@ if __name__ == "__main__":
     parser.add_argument ("-dp", "--dataset-path", dest = "dataset_path", type = str, default = './pokemon',
                          help = "Dataset path"),
 
+    parser.add_argument("-l", "--load", dest="load_path", type=str,
+                        help="Path of the experiment on the results folder"),
+
     parser.add_argument ("-tr", "--train",
                          action = "store_true", dest = "mode_training", default = False,
                          help = "Use training mode")
@@ -24,5 +27,9 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args ()
+    if args.train:
+        train_loop(args)
+    elif args.load_path:
+        generate(args)
 
-    train_loop(args)
+

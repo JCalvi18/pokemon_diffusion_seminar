@@ -1,5 +1,5 @@
 from utils import get_value_at_t, beta_scheduler, get_cumulative
-from typing import Optional, Literal
+from typing import Optional, Literal,List
 import torch
 from torch import Tensor, rand_like, randn
 import torch.nn.functional as F
@@ -94,7 +94,7 @@ class Model (object):
             # Algorith 2 line 4
             return mean + torch.sqrt (posterior_variance_t) * noise
 
-    def inference_loop (self, input_shape):
+    def inference_loop (self, input_shape)->List[Tensor]:
         device = next (self.network.parameters ()).device
 
         batches = input_shape [0]
@@ -108,12 +108,16 @@ class Model (object):
             # Consider array of same timesteps given that inference is done in batches
             timesteps = torch.full ((batches,), i, device = device, dtype = torch.long)
             sample = self.backward_sample (sample, timesteps, i)
-            result.append (sample.cpu ().numpy ())
+            result.append (sample.cpu ().detach())
 
         return result
 
     def save_model (self, results_folder, checkpoint: int):
-
         network_folder = Path (f"{results_folder}/network")
         network_folder.mkdir (parents = True, exist_ok = True)
         torch.save (self.network.state_dict (), f'{network_folder}/epoch-{checkpoint}.pth')
+
+    def load_model(self, path:str):
+        network_folder = Path(f"{path}/network")
+        self.network.load_state_dict(torch.load(network_folder))
+        self.network.eval()

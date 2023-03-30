@@ -2,7 +2,7 @@ import torch
 from torch.optim import Adam
 from model import Model
 from network import SimpleUnet
-from dataset import prepare_data
+from dataset import prepare_data, output_to_image
 from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
@@ -23,7 +23,7 @@ def train_loop (args):
 
     # Setup directory
     timedate_stamp = "{:%H-%M-%d}".format (datetime.now ())
-    results_folder = Path (f"./results/{timedate_stamp}")
+    results_folder = Path (f"./results/train/{timedate_stamp}")
     results_folder.mkdir (parents = True, exist_ok = True)
     save_epoch_every = 10
     save_sample_every = 10
@@ -50,3 +50,24 @@ def train_loop (args):
 
             if epoch > 0 and epochs % save_epoch_every == 0:
                 model.save_model (results_folder, epoch)
+
+def generate(args):
+    load_path = args.load_path
+    batch_size = args.batch
+    total_timesteps = args.total_timesteps
+
+
+    torch.manual_seed(args.seed)
+    timedate_stamp = "{:%H-%M-%d}".format(datetime.now())
+    results_folder = Path(f"./results/gen/{timedate_stamp}")
+    results_folder.mkdir(parents=True, exist_ok=True)
+    network = SimpleUnet().to(device)
+    model = Model(network, total_timesteps)
+
+    model.load_model(load_path)
+
+    output_dim = (batch_size, 4, 256, 256)
+    results = model.inference_loop(output_dim)
+    img = output_to_image(results[-1])
+    print(img)
+
