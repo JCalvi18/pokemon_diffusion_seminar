@@ -19,7 +19,7 @@ if __name__ == "__main__":
                         help="Path of the experiment on the results folder"),
 
     parser.add_argument ("-tr", "--train",
-                         action = "store_true", dest = "mode_training", default = False,
+                         action = "store_true", dest = "training_mode", default = False,
                          help = "Use training mode")
 
     parser.add_argument ("-s", "--seed", dest = "seed", type = int, default = 132,
@@ -27,9 +27,10 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args ()
-    if args.train:
+    if args.training_mode:
         train_loop(args)
     elif args.load_path:
         generate(args)
+
 
 
