@@ -19,6 +19,9 @@ if __name__ == "__main__":
                          action = "store_true", dest = "mode_training", default = False,
                          help = "Use training mode")
 
+    parser.add_argument ("-s", "--seed", dest = "seed", type = int, default = 132,
+                         help = "Random seed, defaults: ditto :)"),
+
 
     args = parser.parse_args ()
 

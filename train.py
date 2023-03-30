@@ -18,6 +18,9 @@ def train_loop (args):
     batch_size = args.batch
     dataset_path = args.dataset_path
 
+    # Set seed
+    torch.manual_seed (args.seed)
+
     # Setup directory
     timedate_stamp = "{:%H-%M-%d}".format (datetime.now ())
     results_folder = Path (f"./results/{timedate_stamp}")
@@ -45,5 +48,5 @@ def train_loop (args):
             loss.backward ()
             optimizer.step ()
 
-            if epoch>0 and epochs % save_epoch_every == 0:
-                model.save_model(results_folder, epoch)
+            if epoch > 0 and epochs % save_epoch_every == 0:
+                model.save_model (results_folder, epoch)
