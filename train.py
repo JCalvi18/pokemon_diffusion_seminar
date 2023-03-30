@@ -32,6 +32,6 @@ def train_loop (args):
             loss = model.train_step(img_batch, t,loss_type = 'huber')
 
             if step % 10 == 0:
-                print(f'Loss: {loss.cpu().numpy()}')
+                print(f'Loss: {loss.cpu().detach().numpy()}')
             loss.backward()
             optimizer.step()
