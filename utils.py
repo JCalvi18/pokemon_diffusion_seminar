@@ -43,7 +43,7 @@ def get_cumulative (betas: torch.Tensor) -> Tuple [
     # Add 1.0 to the beginning of the above array and remove last index
     alphas_cumprod_prev = F.pad (alphas_cumprod [:-1], (1, 0), value = 1.0)
 
-    # Square variance
+    # Square variance Section 3.2, 3rd line
     posterior_variance: torch.Tensor = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
     return (
         alphas_cumprod,
