@@ -110,7 +110,9 @@ class Model(object):
             sample = self.backward_sample(sample, timesteps, i)
             result.append(sample.cpu().detach())
 
-        return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
+        # Probably here there is a corruption of data
+        # return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
+        return result[-1]
 
     def save_model(self, results_folder, checkpoint: int):
         network_folder = Path(f"{results_folder}/network")
