@@ -77,4 +77,4 @@ def generate(args):
 
     output_dim = (batch_size, 4, 256, 256)
     results = model.inference_loop(output_dim)
-    save_to_png(results_folder, results)
+    save_to_png(results_folder, results[-1])
