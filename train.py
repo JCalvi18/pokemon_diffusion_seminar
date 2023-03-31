@@ -22,7 +22,7 @@ def train_loop(args):
     torch.manual_seed(args.seed)
 
     # Setup directory
-    timedate_stamp = "{:%H-%M-%d}".format(datetime.now())
+    timedate_stamp = "{:%M-%d-%H}".format(datetime.now())
     results_folder = Path(f"./results/train/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
     save_epoch_every = 10
@@ -67,7 +67,7 @@ def generate(args):
     total_timesteps = args.timesteps
 
     torch.manual_seed(args.seed)
-    timedate_stamp = "{:%H-%M-%d}".format(datetime.now())
+    timedate_stamp = "{:%M-%d-%H}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
     network = SimpleUnet().to(device)
