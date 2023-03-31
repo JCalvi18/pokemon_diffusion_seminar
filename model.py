@@ -1,7 +1,7 @@
 from utils import get_value_at_t, beta_scheduler, get_cumulative
 from typing import Optional, Literal, Tuple
 import torch
-from torch import Tensor, normal, randn
+from torch import Tensor, randn
 import torch.nn.functional as F
 from tqdm import tqdm
 from pathlib import Path
@@ -35,7 +35,7 @@ class Model (object):
         """
 
         if noise is None:
-            noise = normal (0, 1, x.shape)
+            noise = randn (x.shape, device = x.device)
         # Square root of cumulative alphas at t
         sqrt_cma_t = get_value_at_t (self.sqrt_alphas_cumprod, t, x.shape)
         # Square root of one minus cumulative alphas at t
@@ -54,7 +54,7 @@ class Model (object):
         :return: loss between noise used and predicted one by network
         """
         # Generate noise using Normal distribution
-        noise = normal (0, 1, x.shape)
+        noise = randn (x.shape, device = x.device)
         # Add noise for the different time steps
         noisy_x = self.forward_sample (x, t, noise)
         predicted_noise = self.network (noisy_x, t)
@@ -90,7 +90,7 @@ class Model (object):
         else:
             posterior_variance_t = get_value_at_t (self.posterior_variance, t, x.shape)
             # With 0 mean and unit variance
-            noise = normal (0, 1, x.shape)
+            noise = randn (x.shape, device = x.device)
             # Algorith 2 line 4
             return mean + torch.sqrt (posterior_variance_t) * noise
 
