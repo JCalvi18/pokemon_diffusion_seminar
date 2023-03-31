@@ -112,8 +112,8 @@ class Model (object):
             result.append (sample.cpu ())
 
         # Probably here there is a corruption of data
-        # return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
-        return result [-1]
+        return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
+        # return result [-1]
 
     def save_model (self, results_folder, checkpoint: int):
         network_folder = Path (f"{results_folder}/network")
