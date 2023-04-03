@@ -27,6 +27,11 @@ def train_loop(args):
     results_folder.mkdir(parents=True, exist_ok=True)
     save_epoch_every = 10
     save_sample_every = 10
+    with open(f'{results_folder}/summary.txt', 'a') as f:
+        print(f'Total time steps: {total_timesteps}', file=f)
+        print(f'Learning rate: {lr}', file=f)
+        print(f'Epochs: {epochs}', file=f)
+        print(f'Batch size: {batch_size}', file=f)
 
     network = Unet().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
