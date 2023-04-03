@@ -85,36 +85,36 @@ class Unet(nn.Module):
         self.init_conv = nn.Conv2d(in_channel, initial_channel_scale, 1, padding=0)
 
         # Encoder
-        # In -> [B,16,256,256] Out -> [B,32,128,128]
-        self.e1 = EncoderBlock(initial_channel_scale, 32, time_emb_dim)
+        # In -> [B,32,256,256] Out -> [B,64,128,128]
+        self.e1 = EncoderBlock(initial_channel_scale, 64, time_emb_dim)
 
-        # In -> [B,32,128,128] Out -> [B,128,64,64]
-        self.e2 = EncoderBlock(32, 64, time_emb_dim)
+        # In -> [B,64,128,128] Out -> [B,128,64,64]
+        self.e2 = EncoderBlock(64, 128, time_emb_dim)
 
         # In -> [B,128,64,64] Out -> [B,256,32,32]
-        self.e3 = EncoderBlock(64, 128, time_emb_dim)
+        self.e3 = EncoderBlock(128, 256, time_emb_dim)
 
         # In -> [B,256,32,32] Out -> [B,512,32,32]
-        self.e4 = EncoderBlock(128, 256, time_emb_dim, last_block=True)
+        self.e4 = EncoderBlock(256, 512, time_emb_dim, last_block=True)
 
         # Bridge
         # In -> [B,512,32,32] Out -> [B,512,32,32]
-        self.b1 = ResnetBlock(256, 256, time_emb_dim)
-        self.b_att = ResAttention(256, LinearAttention(256))
-        self.b2 = ResnetBlock(256, 256, time_emb_dim)
+        self.b1 = ResnetBlock(512, 512, time_emb_dim)
+        self.b_att = ResAttention(512, LinearAttention(512))
+        self.b2 = ResnetBlock(512, 512, time_emb_dim)
 
         # Decoder
         # In -> [B,512,32,32] Out -> [B,256,32,32]
-        self.d1 = DecoderBlock(256, 128, time_emb_dim)
+        self.d1 = DecoderBlock(512, 256, time_emb_dim)
 
         # In -> [B,256,32,32] Out -> [B,128,64,64]
-        self.d2 = DecoderBlock(128, 64, time_emb_dim)
+        self.d2 = DecoderBlock(256, 128, time_emb_dim)
 
         # In -> [B,128,64,64] Out -> [B,64,128,128]
-        self.d3 = DecoderBlock(64, 32, time_emb_dim)
+        self.d3 = DecoderBlock(128, 64, time_emb_dim)
 
         # In -> [B,64,128,128] Out -> [B,32,256,256]
-        self.d4 = DecoderBlock(32, initial_channel_scale, time_emb_dim, last_block=True)
+        self.d4 = DecoderBlock(64, initial_channel_scale, time_emb_dim, last_block=True)
 
         # Two times because we will concatenate with a skip connection os the same size
         self.last_res = ResnetBlock(initial_channel_scale * 2, initial_channel_scale, time_emb_dim)
