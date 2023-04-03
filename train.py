@@ -1,7 +1,7 @@
 import torch
 from torch.optim import Adam
 from model import Model
-from network import SimpleUnet
+from network import SimpleUnet, Unet
 from dataset import prepare_data, save_to_png
 from tqdm import tqdm
 from pathlib import Path
@@ -28,7 +28,7 @@ def train_loop(args):
     save_epoch_every = 10
     save_sample_every = 10
 
-    network = SimpleUnet().to(device)
+    network = Unet().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
