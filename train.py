@@ -7,7 +7,7 @@ from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
 
-device = "cuda" if torch.cuda.is_available() else 'cpu'
+device = "cuda:0" if torch.cuda.is_available() else 'cpu'
 
 
 def train_loop(args):
