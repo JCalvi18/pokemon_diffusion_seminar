@@ -70,7 +70,7 @@ def generate(args):
     timedate_stamp = "{:%M-%d-%H}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    network = SimpleUnet().to(device)
+    network = Unet().to(device)
     model = Model(network, total_timesteps)
 
     model.load_model(load_path)
