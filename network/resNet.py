@@ -42,6 +42,43 @@ class ResnetBlock(nn.Module):
         return x + self.res_conv(inputs)
 
 
+class MinResnetBlock(nn.Module):
+
+    def __init__(self, in_channels, out_channels, time_emb_dim, groups=8):
+        """
+        ReSnet block, implements two convolutions, group normalization and SiLU activation
+        :param in_channels: Input channels
+        :param out_channels: Output channels
+        :param groups: Number of groups to use in group normalization
+        """
+        super().__init__()
+        self.time_mlp = nn.Sequential(
+            nn.SiLU(),
+            nn.Linear(time_emb_dim, out_channels)
+        )
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
+        self.norm1 = nn.BatchNorm2d( out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
+        self.norm2 = nn.BatchNorm2d( out_channels)
+        self.activation = nn.ReLU()
+        # Skip connection, if in and out channels differ use a convolution else just skip
+        self.res_conv = nn.Conv2d(in_channels, out_channels, 1) if in_channels != out_channels else nn.Identity()
+
+    def forward(self, inputs, t):
+        x = self.conv1(inputs)
+        x = self.norm1(x)
+        x = self.activation(x)
+        time_emb: Tensor = self.time_mlp(t)
+        # Transform from BC to BCWH
+        time_emb = time_emb[(...,) + (None,) * 2]
+        x = x + time_emb
+        x = self.conv2(x)
+        x = self.norm2(x)
+        x = self.activation(x)
+        # return sum of previous operations and the skip connection
+        return x + self.res_conv(inputs)
+
+
 class Residual(nn.Module):
     def __init__(self, fn):
         super().__init__()
