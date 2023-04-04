@@ -1,21 +1,30 @@
 from torch import nn
-import math
 import torch
+from .positional import SinusoidalPositionEmbeddings
+from .attention import AttentionBlock
 
 
-class SinusoidalPositionEmbeddings (nn.Module):
-    def __init__ (self, dim):
+class ConvBlock (nn.Module):
+    def __init__ (self, in_channel, out_channel, time_emb_dim):
         super ().__init__ ()
-        self.dim = dim
+        self.time_mlp = nn.Linear (time_emb_dim, out_channel)
+        self.conv1 = nn.Conv2d (in_channel, out_channel, kernel_size = 3, padding = 1)
+        self.bn1 = nn.BatchNorm2d (out_channel)
+        self.conv2 = nn.Conv2d (out_channel, out_channel, kernel_size = 3, padding = 1)
+        self.bn2 = nn.BatchNorm2d (out_channel)
+        self.relu = nn.ReLU ()
 
-    def forward (self, time):
-        device = time.device
-        half_dim = self.dim // 2
-        embeddings = math.log (10000) / (half_dim - 1)
-        embeddings = torch.exp (torch.arange (half_dim, device = device) * -embeddings)
-        embeddings = time [:, None] * embeddings [None, :]
-        embeddings = torch.cat ((embeddings.sin (), embeddings.cos ()), dim = -1)
-        return embeddings
+    def forward (self, inputs, t):
+        x = self.conv1 (inputs)
+        x = self.bn1 (x)
+        x = self.relu (x)
+        time_emb = self.time_mlp (t)
+        time_emb = time_emb [(...,) + (None,) * 2]
+        x = x + time_emb
+        x = self.conv2 (x)
+        x = self.bn2 (x)
+        x = self.relu (x)
+        return x
 
 
 class EncoderBlock (nn.Module):
@@ -36,39 +45,21 @@ class DecoderBlock (nn.Module):
         super ().__init__ ()
         self.up = nn.ConvTranspose2d (in_c, out_c, kernel_size = 2, stride = 2, padding = 0)
         self.conv = ConvBlock (out_c + out_c, out_c, time_emb_dim)
+        self.Att = AttentionBlock (F_g = out_c, F_l = out_c, F_int = out_c // 2)
 
     def forward (self, inputs, skip, t):
         x = self.up (inputs)
-        x = torch.cat ([x, skip], axis = 1)
+        x = self.Att (g = x, x = skip)
+        x = torch.cat ([x, skip], dim = 1)
         x = self.conv (x, t)
         return x
 
 
-class ConvBlock (nn.Module):
-    def __init__ (self, in_c, out_c, time_emb_dim):
-        super ().__init__ ()
-        self.time_mlp = nn.Linear (time_emb_dim, out_c)
-        self.conv1 = nn.Conv2d (in_c, out_c, kernel_size = 3, padding = 1)
-        self.bn1 = nn.BatchNorm2d (out_c)
-        self.conv2 = nn.Conv2d (out_c, out_c, kernel_size = 3, padding = 1)
-        self.bn2 = nn.BatchNorm2d (out_c)
-        self.relu = nn.ReLU ()
-
-    def forward (self, inputs, t):
-        x = self.conv1 (inputs)
-        x = self.bn1 (x)
-        x = self.relu (x)
-        time_emb = self.time_mlp (t)
-        time_emb = time_emb [(...,) + (None,) * 2]
-        x = x + time_emb
-        x = self.conv2 (x)
-        x = self.bn2 (x)
-        x = self.relu (x)
-        return x
-
-
-class SimpleUnet (nn.Module):
-    def __init__ (self, in_channels=4, out_channels=4):
+class Unet (nn.Module):
+    """
+    Implement Attention
+    """
+    def __init__ (self):
         super ().__init__ ()
         time_emb_dim = 32
 
@@ -80,7 +71,7 @@ class SimpleUnet (nn.Module):
         )
 
         # encoder
-        self.e1 = EncoderBlock (in_channels, 64, time_emb_dim)
+        self.e1 = EncoderBlock (4, 64, time_emb_dim)
         self.e2 = EncoderBlock (64, 128, time_emb_dim)
         self.e3 = EncoderBlock (128, 256, time_emb_dim)
         self.e4 = EncoderBlock (256, 512, time_emb_dim)
@@ -92,7 +83,7 @@ class SimpleUnet (nn.Module):
         self.d3 = DecoderBlock (256, 128, time_emb_dim)
         self.d4 = DecoderBlock (128, 64, time_emb_dim)
 
-        self.outputs = nn.Conv2d (64, out_channels, kernel_size = 1, padding = 0)
+        self.outputs = nn.Conv2d (64, 4, kernel_size = 1, padding = 0)
 
     def forward (self, inputs, timestep):
         # encoder
@@ -102,7 +93,7 @@ class SimpleUnet (nn.Module):
         s3, p3 = self.e3 (p2, t)
         s4, p4 = self.e4 (p3, t)
         # bridge
-        b = self.b (p4,t)
+        b = self.b (p4, t)
         # decoder
         d1 = self.d1 (b, s4, t)
         d2 = self.d2 (d1, s3, t)

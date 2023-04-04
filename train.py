@@ -1,7 +1,7 @@
 import torch
 from torch.optim import Adam
 from model import Model
-from network import SimpleUnet, Unet
+from network import UnetV2
 from dataset import prepare_data, save_to_png
 from tqdm import tqdm
 from pathlib import Path
@@ -33,7 +33,7 @@ def train_loop(args):
         print(f'Epochs: {epochs}', file=f)
         print(f'Batch size: {batch_size}', file=f)
 
-    network = Unet().to(device)
+    network = UnetV2().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
@@ -75,7 +75,7 @@ def generate(args):
     timedate_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    network = Unet().to(device)
+    network = UnetV2().to(device)
     model = Model(network, total_timesteps)
 
     model.load_model(load_path)

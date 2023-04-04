@@ -69,6 +69,9 @@ class DecoderBlock(nn.Module):
 
 
 class Unet(nn.Module):
+    """
+    Bigger architecture with double resnet modules
+    """
     def __init__(self, in_channel=4, out_channel=4):
         super().__init__()
         time_emb_dim = 32

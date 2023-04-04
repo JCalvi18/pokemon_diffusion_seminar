@@ -7,7 +7,6 @@ from torch import nn
 class SinusoidalPositionEmbeddings(nn.Module):
     """"
     Based on https://arxiv.org/abs/1706.03762
-
     """
 
     def __init__(self, dim):
