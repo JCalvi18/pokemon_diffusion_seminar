@@ -22,10 +22,6 @@ if __name__ == "__main__":
                          action = "store_true", dest = "training_mode", default = False,
                          help = "Use training mode")
 
-    parser.add_argument("--log",
-                        action="store_true", dest="logger", default=False,
-                        help="Log the results")
-
     parser.add_argument("-uv", "--unet", dest="unet_version", type=int, default=-1,
                         help="Unet version"),
 
