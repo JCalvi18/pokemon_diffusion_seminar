@@ -17,21 +17,27 @@ def train_loop(args):
     lr = args.lr
     batch_size = args.batch
     dataset_path = args.dataset_path
+    logger = args.logger
 
     # Set seed
     torch.manual_seed(args.seed)
 
     # Setup directory
-    datetime_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
-    results_folder = Path(f"./results/train/{datetime_stamp}")
-    results_folder.mkdir(parents=True, exist_ok=True)
-    save_epoch_every = 10
-    save_sample_every = 10
-    with open(f'{results_folder}/summary.txt', 'a') as f:
-        print(f'Total time steps: {total_timesteps}', file=f)
-        print(f'Learning rate: {lr}', file=f)
-        print(f'Epochs: {epochs}', file=f)
-        print(f'Batch size: {batch_size}', file=f)
+    save_sample_every = None
+    results_folder = None
+    save_epoch_every = None
+    datetime_stamp = None
+    if logger:
+        datetime_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
+        results_folder = Path(f"./results/train/{datetime_stamp}")
+        results_folder.mkdir(parents=True, exist_ok=True)
+        save_epoch_every = 10
+        save_sample_every = 10
+        with open(f'{results_folder}/summary.txt', 'a') as f:
+            print(f'Total time steps: {total_timesteps}', file=f)
+            print(f'Learning rate: {lr}', file=f)
+            print(f'Epochs: {epochs}', file=f)
+            print(f'Batch size: {batch_size}', file=f)
 
     network = UnetV4().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
@@ -47,7 +53,7 @@ def train_loop(args):
             img_batch = img_batch.to(device)
             loss = model.train_step(img_batch, t, loss_type='huber')
 
-            if step % save_sample_every == 0:
+            if logger and step % save_sample_every == 0:
                 with open(f'{results_folder}/loss.txt', 'a') as f:
                     print(f'Epoch: {epoch}, Sample: {step},  Loss: {loss.cpu().detach().numpy():.5f}', file=f)
             loss.backward()
@@ -63,8 +69,9 @@ def train_loop(args):
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
     results_folder = Path(f"./results/gen/{datetime_stamp}/init")
-    results_folder.mkdir (parents = True, exist_ok = True)
+    results_folder.mkdir(parents=True, exist_ok=True)
     save_to_png(results_folder, results[0])
+
 
 def generate(args):
     load_path = args.load_path
