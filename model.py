@@ -111,6 +111,13 @@ class Model (object):
             sample = self.backward_sample (sample, timesteps, i)
             result.append (sample.cpu ())
 
+        for i in tqdm (reversed (range (0, self.total_timesteps)), desc = 'Inference loop',
+                       total = self.total_timesteps):
+            # Consider array of same timesteps given that inference is done in batches
+            timesteps = torch.full ((batches,), i, device = device, dtype = torch.long)
+            sample = self.backward_sample (sample, timesteps, i)
+            result.append (sample.cpu ())
+
         # Probably here there is a corruption of data
         return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
         # return result [-1]
