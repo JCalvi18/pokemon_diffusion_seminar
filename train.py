@@ -1,13 +1,13 @@
 import torch
 from torch.optim import Adam
 from model import Model
-from network import SimpleUnet
+from network import SimpleUnet, Unet
 from dataset import prepare_data, save_to_png
 from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
 
-device = "cuda" if torch.cuda.is_available() else 'cpu'
+device = "cuda:0" if torch.cuda.is_available() else 'cpu'
 
 
 def train_loop(args):
@@ -22,13 +22,18 @@ def train_loop(args):
     torch.manual_seed(args.seed)
 
     # Setup directory
-    timedate_stamp = "{:%M-%d-%H}".format(datetime.now())
-    results_folder = Path(f"./results/train/{timedate_stamp}")
+    datetime_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
+    results_folder = Path(f"./results/train/{datetime_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
     save_epoch_every = 10
     save_sample_every = 10
+    with open(f'{results_folder}/summary.txt', 'a') as f:
+        print(f'Total time steps: {total_timesteps}', file=f)
+        print(f'Learning rate: {lr}', file=f)
+        print(f'Epochs: {epochs}', file=f)
+        print(f'Batch size: {batch_size}', file=f)
 
-    network = SimpleUnet().to(device)
+    network = Unet().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
@@ -51,13 +56,13 @@ def train_loop(args):
             if epoch > 0 and epochs % save_epoch_every == 0:
                 model.save_model(results_folder, epoch)
 
-    results_folder = Path(f"./results/gen/{timedate_stamp}/last")
+    results_folder = Path(f"./results/gen/{datetime_stamp}/last")
     results_folder.mkdir(parents=True, exist_ok=True)
 
     output_dim = (4, 4, 256, 256)
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
-    results_folder = Path(f"./results/gen/{timedate_stamp}/init")
+    results_folder = Path(f"./results/gen/{datetime_stamp}/init")
     results_folder.mkdir (parents = True, exist_ok = True)
     save_to_png(results_folder, results[0])
 
@@ -67,7 +72,7 @@ def generate(args):
     total_timesteps = args.timesteps
 
     torch.manual_seed(args.seed)
-    timedate_stamp = "{:%M-%d-%H}".format(datetime.now())
+    timedate_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
     network = Unet().to(device)

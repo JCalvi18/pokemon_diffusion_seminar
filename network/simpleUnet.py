@@ -18,10 +18,10 @@ class SinusoidalPositionEmbeddings (nn.Module):
         return embeddings
 
 
-class encoder_block (nn.Module):
+class EncoderBlock (nn.Module):
     def __init__ (self, in_c, out_c, time_emb_dim):
         super ().__init__ ()
-        self.conv = conv_block (in_c, out_c, time_emb_dim)
+        self.conv = ConvBlock (in_c, out_c, time_emb_dim)
         self.pool = nn.MaxPool2d ((2, 2))
         # see how to implement time embeddings
 
@@ -31,11 +31,11 @@ class encoder_block (nn.Module):
         return x, p
 
 
-class decoder_block (nn.Module):
+class DecoderBlock (nn.Module):
     def __init__ (self, in_c, out_c, time_emb_dim):
         super ().__init__ ()
         self.up = nn.ConvTranspose2d (in_c, out_c, kernel_size = 2, stride = 2, padding = 0)
-        self.conv = conv_block (out_c + out_c, out_c, time_emb_dim)
+        self.conv = ConvBlock (out_c + out_c, out_c, time_emb_dim)
 
     def forward (self, inputs, skip, t):
         x = self.up (inputs)
@@ -44,7 +44,7 @@ class decoder_block (nn.Module):
         return x
 
 
-class conv_block (nn.Module):
+class ConvBlock (nn.Module):
     def __init__ (self, in_c, out_c, time_emb_dim):
         super ().__init__ ()
         self.time_mlp = nn.Linear (time_emb_dim, out_c)
@@ -68,7 +68,7 @@ class conv_block (nn.Module):
 
 
 class SimpleUnet (nn.Module):
-    def __init__ (self):
+    def __init__ (self, in_channels=4, out_channels=4):
         super ().__init__ ()
         time_emb_dim = 32
 
@@ -80,19 +80,19 @@ class SimpleUnet (nn.Module):
         )
 
         # encoder
-        self.e1 = encoder_block (4, 64, time_emb_dim)
-        self.e2 = encoder_block (64, 128, time_emb_dim)
-        self.e3 = encoder_block (128, 256, time_emb_dim)
-        self.e4 = encoder_block (256, 512, time_emb_dim)
+        self.e1 = EncoderBlock (in_channels, 64, time_emb_dim)
+        self.e2 = EncoderBlock (64, 128, time_emb_dim)
+        self.e3 = EncoderBlock (128, 256, time_emb_dim)
+        self.e4 = EncoderBlock (256, 512, time_emb_dim)
         # bridge
-        self.b = conv_block (512, 1024, time_emb_dim)
+        self.b = ConvBlock (512, 1024, time_emb_dim)
         # decoder
-        self.d1 = decoder_block (1024, 512, time_emb_dim)
-        self.d2 = decoder_block (512, 256, time_emb_dim)
-        self.d3 = decoder_block (256, 128, time_emb_dim)
-        self.d4 = decoder_block (128, 64, time_emb_dim)
+        self.d1 = DecoderBlock (1024, 512, time_emb_dim)
+        self.d2 = DecoderBlock (512, 256, time_emb_dim)
+        self.d3 = DecoderBlock (256, 128, time_emb_dim)
+        self.d4 = DecoderBlock (128, 64, time_emb_dim)
 
-        self.outputs = nn.Conv2d (64, 4, kernel_size = 1, padding = 0)
+        self.outputs = nn.Conv2d (64, out_channels, kernel_size = 1, padding = 0)
 
     def forward (self, inputs, timestep):
         # encoder
