@@ -1,13 +1,15 @@
 import torch
 from torch.optim import Adam
 from model import Model
-from network import UnetV4
+from network import UnetV1, UnetV2, UnetV3, UnetV4
 from dataset import prepare_data, save_to_png
 from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
 
 device = "cuda:0" if torch.cuda.is_available() else 'cpu'
+
+unet_versions = [UnetV1, UnetV2, UnetV3, UnetV4]
 
 
 def train_loop(args):
@@ -18,6 +20,7 @@ def train_loop(args):
     batch_size = args.batch
     dataset_path = args.dataset_path
     logger = args.logger
+    unet_version = args.unet_version
 
     # Set seed
     torch.manual_seed(args.seed)
@@ -38,8 +41,9 @@ def train_loop(args):
             print(f'Learning rate: {lr}', file=f)
             print(f'Epochs: {epochs}', file=f)
             print(f'Batch size: {batch_size}', file=f)
+            print(f'U-Net version: {unet_version}', file=f)
 
-    network = UnetV4().to(device)
+    network = unet_version[unet_version]().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
@@ -77,12 +81,13 @@ def generate(args):
     load_path = args.load_path
     batch_size = args.batch
     total_timesteps = args.timesteps
+    unet_version = args.unet_version
 
     torch.manual_seed(args.seed)
     timedate_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    network = UnetV4().to(device)
+    network = unet_version[unet_version]().to(device)
     model = Model(network, total_timesteps)
 
     model.load_model(load_path)

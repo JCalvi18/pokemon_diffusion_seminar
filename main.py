@@ -26,6 +26,9 @@ if __name__ == "__main__":
                         action="store_true", dest="logger", default=False,
                         help="Log the results")
 
+    parser.add_argument("-uv", "--unet", dest="unet_version", type=int, default=-1,
+                        help="Unet version"),
+
     parser.add_argument ("-s", "--seed", dest = "seed", type = int, default = 132,
                          help = "Random seed, defaults: ditto :)"),
 
