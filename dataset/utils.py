@@ -51,7 +51,7 @@ def output_to_video(path: str, t: Tensor):
         write_video(f'{path}/pokemon-{b}.mp4', video, fps=30)
 
 
-def save_to_png(path: Path, t: Tensor):
+def save_to_png(path: Path, t: Tensor, name='sample.png'):
     array = np_transform(t)
 
     fig, ax = plt.subplots(nrows=2, ncols=2)
@@ -63,7 +63,13 @@ def save_to_png(path: Path, t: Tensor):
             col.axis('off')
             col.imshow(array[i+j])
     plt.tight_layout()
-    plt.savefig(f'{path}/sample.png', bbox_inches='tight')
+    plt.savefig(f'{path}/{name}', bbox_inches='tight')
+
+
+def save_values(path: Path, t: Tensor, name='values.npz'):
+    array = np_transform(t)
+    np.save(f'{path}/{name}',array)
+
 
 
 

@@ -94,7 +94,7 @@ class Model (object):
             # Algorith 2 line 4
             return mean + torch.sqrt (posterior_variance_t) * noise
 
-    def inference_loop (self, input_shape: Tuple) -> Tensor:
+    def inference_loop (self, input_shape: Tuple, double_inference=False) -> Tensor:
         self.network.eval ()
         device = next (self.network.parameters ()).device
 
@@ -110,13 +110,13 @@ class Model (object):
             timesteps = torch.full ((batches,), i, device = device, dtype = torch.long)
             sample = self.backward_sample (sample, timesteps, i)
             result.append (sample.cpu ())
-
-        for i in tqdm (reversed (range (0, self.total_timesteps)), desc = 'Inference loop',
-                       total = self.total_timesteps):
-            # Consider array of same timesteps given that inference is done in batches
-            timesteps = torch.full ((batches,), i, device = device, dtype = torch.long)
-            sample = self.backward_sample (sample, timesteps, i)
-            result.append (sample.cpu ())
+        if double_inference:
+            for i in tqdm (reversed (range (0, self.total_timesteps)), desc = 'Inference loop',
+                           total = self.total_timesteps):
+                # Consider array of same timesteps given that inference is done in batches
+                timesteps = torch.full ((batches,), i, device = device, dtype = torch.long)
+                sample = self.backward_sample (sample, timesteps, i)
+                result.append (sample.cpu ())
 
         # Probably here there is a corruption of data
         return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))

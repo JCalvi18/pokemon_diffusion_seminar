@@ -2,7 +2,7 @@ import torch
 from torch.optim import Adam
 from model import Model
 from network import UnetV1, UnetV2, UnetV3, UnetV4
-from dataset import prepare_data, save_to_png
+from dataset import prepare_data, save_to_png, save_values
 from tqdm import tqdm
 from pathlib import Path
 from datetime import datetime
@@ -89,3 +89,7 @@ def generate(args):
     output_dim = (batch_size, 4, 256, 256)
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
+    save_values(results_folder, results[-1])
+    # Double denoise
+    results = model.inference_loop (output_dim, double_inference = True)
+    save_to_png (results_folder, results [-1])
