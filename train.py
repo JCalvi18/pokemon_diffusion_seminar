@@ -92,4 +92,4 @@ def generate(args):
     save_values(results_folder, results[-1])
     # Double denoise
     results = model.inference_loop (output_dim, double_inference = True)
-    save_to_png (results_folder, results [-1])
+    save_to_png (results_folder, results [-1], name = 'double_sample.png')
