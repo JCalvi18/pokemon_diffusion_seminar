@@ -1,7 +1,6 @@
 import os
 from torch.utils.data import Dataset
-from torchvision.io import read_image, ImageReadMode
-
+from PIL import Image
 
 class PokemonDataset (Dataset):
     """
@@ -17,7 +16,10 @@ class PokemonDataset (Dataset):
 
     def __getitem__ (self, idx):
         img_path = os.path.join (self.path, self.files_path [idx])
-        image = read_image (img_path, ImageReadMode.RGB)  # Read as RGBA chanels
+        image = Image.open (img_path)
+        rgba_image = Image.new ("RGBA", image.size, "WHITE")
+        rgba_image.paste (image, (0, 0), image)
+        rgb_image = rgba_image.convert ('RGB')
         if self.transform:
-            image = self.transform (image)
+            image = self.transform (rgb_image)
         return image

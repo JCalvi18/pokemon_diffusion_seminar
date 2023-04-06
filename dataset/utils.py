@@ -16,16 +16,17 @@ def prepare_data (path, batch_size=64, resize=False):
     """
 
     transformations = [
+        transforms.ToTensor (),
         transforms.RandomHorizontalFlip (),  # As stated on the paper
-        transforms.Lambda (lambda img: img / 255),  # In range [0,1]
+        # transforms.Lambda (lambda img: img / 255),  # In range [0,1]
         transforms.Lambda (lambda img: (img * 2) - 1),  # In range [-1,1]
     ]
     if resize:
         transformations.append(transforms.Resize((32, 32)))
 
     # Color Transformations
-    transformations.append(transforms.ColorJitter(brightness = 0.5, hue = 0.3))
-    transformations.append (transforms.RandomInvert(0.2))
+    # transformations.append(transforms.ColorJitter(brightness = 0.5, hue = 0.3))
+    # transformations.append (transforms.RandomInvert(0.2))
 
 
     input_transform = transforms.Compose (transformations)
