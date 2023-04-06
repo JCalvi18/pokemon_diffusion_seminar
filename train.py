@@ -20,6 +20,7 @@ def train_loop (args):
     batch_size = args.batch
     dataset_path = args.dataset_path
     unet_version = args.unet_version
+    resize_dataset = args.scale_down
 
     # Set seed
     torch.manual_seed (args.seed)
@@ -43,7 +44,7 @@ def train_loop (args):
     optimizer = Adam (network.parameters (), lr = lr)
     model = Model (network, total_timesteps)
 
-    train_dataloader = prepare_data (dataset_path, batch_size)
+    train_dataloader = prepare_data (dataset_path, batch_size, resize = resize_dataset)
 
     for epoch in tqdm (range (epochs)):
         for step, img_batch in tqdm (enumerate (train_dataloader), total = len (train_dataloader), leave = False):

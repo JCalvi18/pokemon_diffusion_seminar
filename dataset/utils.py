@@ -8,17 +8,27 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-def prepare_data (path, batch_size=64):
+def prepare_data (path, batch_size=64, resize=False):
     """
     Construct input pipeline using custom dataset and transformations
     :param batch_size: size of each batch
     :return: dataloader object for training
     """
-    input_transform = transforms.Compose ([
+
+    transformations = [
         transforms.RandomHorizontalFlip (),  # As stated on the paper
         transforms.Lambda (lambda img: img / 255),  # In range [0,1]
-        transforms.Lambda (lambda img: (img * 2) - 1)  # In range [-1,1]
-    ])
+        transforms.Lambda (lambda img: (img * 2) - 1),  # In range [-1,1]
+    ]
+    if resize:
+        transformations.append(transforms.Resize((32, 32)))
+
+    # Color Transformations
+    transformations.append(transforms.ColorJitter(brightness = 0.5, hue = 0.3))
+    transformations.append (transforms.RandomInvert(0.2))
+
+
+    input_transform = transforms.Compose (transformations)
 
     dataset = PokemonDataset (path, transform = input_transform)
     train_dataloader = DataLoader (dataset, batch_size = batch_size, shuffle = True, drop_last = True)

@@ -32,6 +32,8 @@ if __name__ == "__main__":
     parser.add_argument ("-s", "--seed", dest = "seed", type = int, default = 132,
                          help = "Random seed, defaults: ditto :)"),
 
+    parser.add_argument ("-sd",      action = "store_true", dest = "scale_down", default = False,
+                         help = "Scale down images")
 
     args = parser.parse_args ()
     if args.training_mode:
