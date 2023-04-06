@@ -31,7 +31,7 @@ def train_loop(args):
     datetime_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/train/{datetime_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    save_epoch_every = 10
+    save_epoch_every = 500
     save_sample_every = 10
     with open(f'{results_folder}/summary.txt', 'a') as f:
         print(f'Total time steps: {total_timesteps}', file=f)
@@ -64,8 +64,8 @@ def train_loop(args):
             loss.backward()
             optimizer.step()
 
-            if epoch > 0 and epochs % save_epoch_every == 0:
-                model.save_model(results_folder, epoch)
+            if (epoch > 0 and epochs % save_epoch_every == 0) or epoch == epochs-1:
+                model.save_model(results_folder, epoch+1)
 
     results_folder = Path(f"./results/gen/{datetime_stamp}/last")
     results_folder.mkdir(parents=True, exist_ok=True)
