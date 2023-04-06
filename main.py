@@ -1,10 +1,14 @@
 from argparse import ArgumentParser
-from train import train_loop, generate
+from train import train_loop
+from generate import generate
 
 if __name__ == "__main__":
     parser = ArgumentParser ()
     parser.add_argument ("-t", "--timesteps", dest = "timesteps", type = int,
                          help = "Total number of timesteps"),
+    parser.add_argument ("-to", dest = "timestep_offset", type = int, default = 500,
+                         help = "Time step offset for generation"),
+
     parser.add_argument ("-e", "--epochs", dest = "epochs", type = int,
                          help = "Total number of Epochs"),
     parser.add_argument ("-lr", dest = "lr", type = float, default = 1e-3,
@@ -34,6 +38,3 @@ if __name__ == "__main__":
         train_loop(args)
     elif args.load_path:
         generate(args)
-
-
-
