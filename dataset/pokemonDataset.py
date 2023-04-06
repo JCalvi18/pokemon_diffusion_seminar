@@ -1,6 +1,6 @@
 import os
 from torch.utils.data import Dataset
-from torchvision.io import read_image
+from torchvision.io import read_image, ImageReadMode
 
 
 class PokemonDataset (Dataset):
@@ -17,7 +17,7 @@ class PokemonDataset (Dataset):
 
     def __getitem__ (self, idx):
         img_path = os.path.join (self.path, self.files_path [idx])
-        image = read_image (img_path)  # Read as RGBA chanels
+        image = read_image (img_path, ImageReadMode.RGB)  # Read as RGBA chanels
         if self.transform:
             image = self.transform (image)
         return image

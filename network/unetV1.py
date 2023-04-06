@@ -68,7 +68,7 @@ class ConvBlock (nn.Module):
 
 
 class Unet (nn.Module):
-    def __init__ (self, in_channels=4, out_channels=4):
+    def __init__ (self, in_channels=3, out_channels=3):
         super ().__init__ ()
         time_emb_dim = 32
 

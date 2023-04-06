@@ -72,7 +72,7 @@ class Unet(nn.Module):
     """
     Bigger architecture with double resnet modules
     """
-    def __init__(self, in_channel=4, out_channel=4):
+    def __init__(self, in_channel=3, out_channel=3):
         super().__init__()
         time_emb_dim = 32
         initial_channel_scale = 8
