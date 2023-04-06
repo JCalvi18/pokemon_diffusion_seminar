@@ -25,7 +25,7 @@ class Model (object):
 
         self.network: torch.nn.Module = network
 
-    def forward_sample (self, x: Tensor, t: Tensor, noise: Tensor):
+    def forward_sample (self, x: Tensor, t: Tensor, noise: Tensor = None):
         """
         Forward pass, adding noise using the reparametrization trick
         :param x: input sample

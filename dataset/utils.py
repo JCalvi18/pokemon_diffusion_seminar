@@ -66,7 +66,7 @@ def save_to_png (path: Path, t: Tensor, name='sample.png'):
     plt.savefig (f'{path}/{name}', bbox_inches = 'tight')
 
 
-def save_values (path: Path, t: Tensor, name='values'):
+def save_values (path: Path, t, name='values'):
     array = np_transform (t)
     np.save (f'{path}/{name}', array)
 
