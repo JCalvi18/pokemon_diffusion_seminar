@@ -18,6 +18,10 @@ def generate (args):
     offset = args.timestep_offset
 
     torch.manual_seed (args.seed)
+    if device == 'cuda:0':
+        torch.cuda.manual_seed_all (42)
+        torch.backends.cudnn.deterministic = True
+
     timedate_stamp = "{:%B-%d--%H:%M}".format (datetime.now ())
     results_folder = Path (f"./results/gen/{timedate_stamp}")
     results_folder.mkdir (parents = True, exist_ok = True)

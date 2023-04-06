@@ -23,7 +23,9 @@ def train_loop (args):
 
     # Set seed
     torch.manual_seed (args.seed)
-
+    if device == 'cuda:0':
+        torch.cuda.manual_seed_all (42)
+        torch.backends.cudnn.deterministic = True
     # Setup directory
     datetime_stamp = "{:%B-%d--%H:%M}".format (datetime.now ())
     results_folder = Path (f"./results/train/{datetime_stamp}")
