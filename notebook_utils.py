@@ -1,16 +1,16 @@
 # Class to simualate parser so to keep consistency
 class Args:
     def __init__(self,
-        timesteps = None,
-        epochs = None,
-        batch = None,
-        dataset_path = './pokemon/',
-        load_path = None,
-        training_mode = False,
-        unet_version = 0,
-        seed = 132,
-        scale_down = False,
-    ) -> None:
+                 timesteps=None,
+                 epochs=None,
+                 batch=None,
+                 dataset_path='./pokemon/',
+                 load_path=None,
+                 training_mode=False,
+                 unet_version=0,
+                 seed=132,
+                 scale_down=False,
+                 ) -> None:
         self.timesteps = timesteps
         self.epochs = epochs
         self.batch = batch

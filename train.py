@@ -21,6 +21,7 @@ def train_loop(args):
     dataset_path = args.dataset_path
     unet_version = args.unet_version
     resize_dataset = args.scale_down
+    use_rgba = args.use_rgba
 
     # Set seed
     torch.manual_seed(args.seed)
@@ -40,12 +41,14 @@ def train_loop(args):
         print(f'Batch size: {batch_size}', file=f)
         print(f'U-Net version: {unet_version}', file=f)
 
-    network = unet_versions[unet_version]().to(device)
+    channels = 4 if use_rgba else 3
+
+    network = unet_versions[unet_version](channels, channels).to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
-    train_dataloader = prepare_data(
-        dataset_path, batch_size, resize=resize_dataset)
+    train_dataloader = prepare_data(dataset_path, batch_size,
+                                    resize=resize_dataset, use_rgba=use_rgba)
 
     for epoch in tqdm(range(epochs)):
         for step, img_batch in tqdm(enumerate(train_dataloader),

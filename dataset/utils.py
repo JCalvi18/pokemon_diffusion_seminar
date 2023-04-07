@@ -8,7 +8,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-def prepare_data(path, batch_size=64, resize=False, return_dataset=False):
+def prepare_data(path, batch_size=64, resize=False,
+                 return_dataset=False, use_rgba=False):
     """
     Construct input pipeline using custom dataset and transformations
     :param batch_size: size of each batch
@@ -18,14 +19,18 @@ def prepare_data(path, batch_size=64, resize=False, return_dataset=False):
     augmentation = [
         transforms.RandomHorizontalFlip(),  # As stated on the paper
         # Lowest pixel becomes black and the lightest becomes white
-        transforms.RandomAutocontrast(),
         transforms.RandomRotation((-45, 45), fill=255),
-        transforms.ColorJitter(brightness=0.0, contrast=0.0, hue=0.2)
     ]
+
+    if not use_rgba:
+        augmentation.append(transforms.RandomAutocontrast())
+        augmentation.append(transforms.ColorJitter(
+            brightness=0.0, contrast=0.0, hue=0.2))
 
     augmentation = transforms.Compose(augmentation)
 
-    dataset = PokemonDataset(path, augmentation=augmentation, resize=resize)
+    dataset = PokemonDataset(path, augmentation=augmentation,
+                             resize=resize, use_rgba=use_rgba)
     train_dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     return (train_dataloader, dataset) if return_dataset else train_dataloader

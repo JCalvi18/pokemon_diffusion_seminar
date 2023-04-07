@@ -16,6 +16,7 @@ def generate(args):
     total_timesteps = args.timesteps
     unet_version = args.unet_version
     offset = args.timestep_offset
+    use_rgba = args.use_rgba
 
     torch.manual_seed(args.seed)
     if device == 'cuda:0':
@@ -25,7 +26,9 @@ def generate(args):
     timedate_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    network = unet_versions[unet_version]().to(device)
+
+    channels = 4 if use_rgba else 3
+    network = unet_versions[unet_version](channels, channels).to(device)
     model = Model(network, total_timesteps)
 
     model.load_model(load_path)
