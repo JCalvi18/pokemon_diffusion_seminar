@@ -70,7 +70,7 @@ def train_loop(args):
     results_folder = Path(f"./results/gen/{datetime_stamp}/last")
     results_folder.mkdir(parents=True, exist_ok=True)
 
-    output_dim = (4, 4, 256, 256)
+    output_dim = (4, 3, 256, 256)
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
     results_folder = Path(f"./results/gen/{datetime_stamp}/init")
