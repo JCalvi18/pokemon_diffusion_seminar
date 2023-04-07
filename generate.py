@@ -25,7 +25,7 @@ def generate(args):
     timedate_stamp = "{:%B-%d--%H:%M}".format(datetime.now())
     results_folder = Path(f"./results/gen/{timedate_stamp}")
     results_folder.mkdir(parents=True, exist_ok=True)
-    network = unet_versions[unet_version]().to(device)
+    network = unet_versions[unet_version](4,4).to(device)
     model = Model(network, total_timesteps)
 
     model.load_model(load_path)
