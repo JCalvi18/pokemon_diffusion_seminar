@@ -28,7 +28,7 @@ def prepare_data(path, batch_size=64, resize=False, return_dataset=False):
     dataset = PokemonDataset(path, augmentation=augmentation, resize=resize)
     train_dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-    return train_dataloader, dataset if return_dataset else train_dataloader
+    return (train_dataloader, dataset) if return_dataset else train_dataloader
 
 
 np_transform = transforms.Compose([
