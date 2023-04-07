@@ -30,7 +30,7 @@ def generate(args):
 
     model.load_model(load_path)
 
-    output_dim = (batch_size, 3, 256, 256)
+    output_dim = (batch_size, 4, 256, 256)
     results = model.inference_loop(output_dim)
     save_to_png(results_folder, results[-1])
     save_values(results_folder, results[-1])
