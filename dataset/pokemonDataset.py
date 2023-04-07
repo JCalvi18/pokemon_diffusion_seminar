@@ -30,7 +30,7 @@ class PokemonDataset (Dataset):
         image = Image.open(img_path)
         rgba_image = Image.new("RGBA", image.size, "WHITE")
         rgba_image.paste(image, (0, 0), image)
-        #rgb_image = rgba_image.convert('RGB')
+        rgb_image = rgba_image.convert('RGB')
         if augmentation:
-            return self.input_transform(self.augmentation(rgba_image))
-        return self.input_transform(rgba_image)
+            return self.input_transform(self.augmentation(rgb_image))
+        return self.input_transform(rgb_image)

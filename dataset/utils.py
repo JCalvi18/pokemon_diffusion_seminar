@@ -18,9 +18,9 @@ def prepare_data(path, batch_size=64, resize=False, return_dataset=False):
     augmentation = [
         transforms.RandomHorizontalFlip(),  # As stated on the paper
         # Lowest pixel becomes black and the lightest becomes white
-        #transforms.RandomAutocontrast(),
+        transforms.RandomAutocontrast(),
         transforms.RandomRotation((-45, 45), fill=255),
-        #transforms.ColorJitter(brightness=0.0, contrast=0.0, hue=0.2)
+        transforms.ColorJitter(brightness=0.0, contrast=0.0, hue=0.2)
     ]
 
     augmentation = transforms.Compose(augmentation)

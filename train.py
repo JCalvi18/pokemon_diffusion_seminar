@@ -40,7 +40,7 @@ def train_loop(args):
         print(f'Batch size: {batch_size}', file=f)
         print(f'U-Net version: {unet_version}', file=f)
 
-    network = unet_versions[unet_version](4, 4).to(device)
+    network = unet_versions[unet_version]().to(device)
     optimizer = Adam(network.parameters(), lr=lr)
     model = Model(network, total_timesteps)
 
