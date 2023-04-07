@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from torchvision import transforms
 import torch
+import imageio
 
 
 def plot_density(image):
@@ -104,3 +105,27 @@ def plot_color_distribution(args, model, dataset, train_dataloader,
                     dpi=300, bbox_inches='tight')
     else:
         plt.show()
+
+
+def generate_forward(model, train_dataloader, timesteps):
+    img = next(iter(train_dataloader))
+    forward = [img]
+    for t in timesteps:
+        forward.append(model.forward_sample(img, t.reshape(1)))
+    return forward
+
+
+def animate(forward, results_folder=None):
+    np_transform = transforms.Compose([
+        transforms.Lambda(lambda t: t.permute(0, 2, 3, 1)),  # BCHW to BHWC
+        transforms.Lambda(lambda t: (t + 1) / 2),  # In range [0,1]
+        transforms.Lambda(lambda t: t * 255.),  # In range [0,255]
+        transforms.Lambda(lambda t: t.numpy().astype(np.uint8)),
+    ])
+    transformed = [np_transform(img)[0] for img in forward]
+    if results_folder is not None:
+        imageio.mimsave(f'{results_folder}/forward_animate.gif',
+                        transformed, fps=10)
+    else:
+        imageio.mimsave('forward_animate.gif',
+                        transformed, fps=10)
