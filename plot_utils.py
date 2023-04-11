@@ -131,16 +131,20 @@ def animate(forward, name, results_folder=None, fps=10):
         imageio.mimsave(f'{name}.gif',
                         transformed, fps=fps)
 
-def show_image(array):
+def show_image(array, results_folder=None):
     
     fig, ax = plt.subplots(nrows=2, ncols=2)
     fig.suptitle('Generated pokemons')
-    # for b, img in enumerate(array):
+    idx = 0
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
-            # col.set_title(i + j)
+            # col.set_title(idx)
             col.axis('off')
-            col.imshow(array[i + j])
+            col.imshow(array[idx])
+            idx += 1
+    if results_folder is not None:
+        plt.tight_layout()
+        plt.savefig(f'{results_folder}/sample', bbox_inches='tight')
     plt.show()
     
     
