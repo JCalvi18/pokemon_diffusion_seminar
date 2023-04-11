@@ -4,6 +4,10 @@ from .positional import SinusoidalPositionEmbeddings
 from .attention import AttentionBlock
 
 
+'''
+Each Convolutional Block implements a sequence of convolutional layers, batch normalizations and relu activations and adds the time embedding as well.
+''' 
+
 class ConvBlock (nn.Module):
     def __init__ (self, in_channel, out_channel, time_emb_dim):
         super ().__init__ ()
@@ -26,7 +30,9 @@ class ConvBlock (nn.Module):
         x = self.relu (x)
         return x
 
-
+'''
+The encoder block applies a adds a pooling layer to the operations of the conv-block.
+'''
 class EncoderBlock (nn.Module):
     def __init__ (self, in_c, out_c, time_emb_dim):
         super ().__init__ ()
@@ -39,7 +45,7 @@ class EncoderBlock (nn.Module):
         p = self.pool (x)
         return x, p
 
-
+'''The Decoder Block alternates between a layers for upsampling,a convolutional layer and in contrast to V1 also an attention block.'''
 class DecoderBlock (nn.Module):
     def __init__ (self, in_c, out_c, time_emb_dim):
         super ().__init__ ()
