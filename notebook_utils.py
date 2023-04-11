@@ -136,7 +136,7 @@ def generate_forward(model, train_dataloader, timesteps):
     return forward
 
 
-def animate(forward, results_folder=None):
+def animate(forward,name, results_folder=None,):
     np_transform = transforms.Compose([
         transforms.Lambda(lambda t: t.permute(0, 2, 3, 1)),  # BCHW to BHWC
         transforms.Lambda(lambda t: (t + 1) / 2),  # In range [0,1]
@@ -145,8 +145,8 @@ def animate(forward, results_folder=None):
     ])
     transformed = [np_transform(img)[0] for img in forward]
     if results_folder is not None:
-        imageio.mimsave(f'{results_folder}/forward_animate.gif',
+        imageio.mimsave(f'{results_folder}/{name}.gif',
                         transformed, fps=10)
     else:
-        imageio.mimsave('forward_animate.gif',
+        imageio.mimsave(f'{name}.gif',
                         transformed, fps=10)

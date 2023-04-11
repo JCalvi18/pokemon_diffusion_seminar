@@ -72,7 +72,7 @@ def save_to_png(path: Path, t: Tensor, name='sample.png'):
     # for b, img in enumerate(array):
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
-            col.set_title(i + j)
+            # col.set_title(i + j)
             col.axis('off')
             col.imshow(array[i + j])
     plt.tight_layout()

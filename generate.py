@@ -4,6 +4,7 @@ from network import UnetV1, UnetV2, UnetV3, UnetV4
 from dataset import save_to_png, save_values
 from pathlib import Path
 from datetime import datetime
+from notebook_utils import animate
 
 device = "cuda:0" if torch.cuda.is_available() else 'cpu'
 
@@ -35,8 +36,10 @@ def generate(args):
 
     output_dim = (batch_size, 3, 256, 256)
     results = model.inference_loop(output_dim)
+    animate(results, 'backward', results_folder)
     save_to_png(results_folder, results[-1])
     save_values(results_folder, results[-1])
+
     # Double denoise
     results = model.double_inference_loop(output_dim, offset)
     save_to_png(results_folder, results[-1], name='double_sample.png')
