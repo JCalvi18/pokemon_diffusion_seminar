@@ -59,7 +59,7 @@ class Unet (nn.Module):
     """
     Implement Attention
     """
-    def __init__ (self):
+    def __init__ (self,  in_channels=3, out_channels=3):
         super ().__init__ ()
         time_emb_dim = 32
 
@@ -71,7 +71,7 @@ class Unet (nn.Module):
         )
 
         # encoder
-        self.e1 = EncoderBlock (3, 64, time_emb_dim)
+        self.e1 = EncoderBlock (in_channels, 64, time_emb_dim)
         self.e2 = EncoderBlock (64, 128, time_emb_dim)
         self.e3 = EncoderBlock (128, 256, time_emb_dim)
         self.e4 = EncoderBlock (256, 512, time_emb_dim)
@@ -83,7 +83,7 @@ class Unet (nn.Module):
         self.d3 = DecoderBlock (256, 128, time_emb_dim)
         self.d4 = DecoderBlock (128, 64, time_emb_dim)
 
-        self.outputs = nn.Conv2d (64, 3, kernel_size = 1, padding = 0)
+        self.outputs = nn.Conv2d (64, out_channels, kernel_size = 1, padding = 0)
 
     def forward (self, inputs, timestep):
         # encoder
