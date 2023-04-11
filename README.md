@@ -23,6 +23,7 @@ Proyect for the seminar "Deep Generative Diffusion Models" - Saarland University
   ```
     conda install matplotlib tqdm
     conda install -c conda-forge einops
+    pip install seaborn imageio
     ```
 
 ### Further considerations

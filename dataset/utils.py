@@ -18,12 +18,14 @@ def prepare_data(path, batch_size=64, resize=False,
 
     augmentation = [
         transforms.RandomHorizontalFlip(),  # As stated on the paper
-        # Lowest pixel becomes black and the lightest becomes white
-        transforms.RandomRotation((-45, 45), fill=255),
+        transforms.RandomRotation((-45, 45), fill=255), # Rotation between -45 and +45 degrees fill gaps with white
     ]
 
+    # Below transformations only available if we use 3 channels
     if not use_rgba:
+        # Lowest pixel becomes black and the lightest becomes white
         augmentation.append(transforms.RandomAutocontrast())
+        # Make small variations in color, as to make a pokemon shiny
         augmentation.append(transforms.ColorJitter(
             brightness=0.0, contrast=0.0, hue=0.2))
 

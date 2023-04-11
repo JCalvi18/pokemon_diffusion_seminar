@@ -14,6 +14,7 @@ class Model (object):
 
     def __init__(self, network: torch.nn.Module, total_timesteps: int):
         self.total_timesteps = total_timesteps
+        # Define variables used in the paper
         self.betas = beta_scheduler(total_timesteps)
         cumulative = get_cumulative(self.betas)
         # Calculate cumulative
@@ -60,6 +61,7 @@ class Model (object):
         noisy_x = self.forward_sample(x, t, noise)
         predicted_noise = self.network(noisy_x, t)
 
+        # Calculate loss depending on the type of loss
         if loss_type == 'l1':
             loss = F.l1_loss(noise, predicted_noise)
         elif loss_type == 'l2':
@@ -73,6 +75,13 @@ class Model (object):
 
     @torch.no_grad()
     def backward_sample(self, x: Tensor, t: Tensor, t_idx: int) -> Tensor:
+        """"
+        Make a backward pass for a batch of samples, by calculating the applied noise at t-1
+        :param x: batch of samples
+        :param t: Current time steps corresponding to the batch of samples
+        :param t_idx: Time step index to control whether we are at the last time step or not
+        :return denoised version of the samples
+        """
         # Beta value at t
         betas_t = get_value_at_t(self.betas, t, x.shape)
 
@@ -99,47 +108,72 @@ class Model (object):
             return mean + torch.sqrt(posterior_variance_t) * noise
 
     def inference_loop(self, input_shape: Tuple) -> Tensor:
+        """
+        Generate an image using by iterating over time steps and on each one denoise using the backward pass.
+        :param input_shape: Shape of the type [B,C,W,H]
+        :return Tensor of generated images at each times step of shape [T,B,C,W,H]
+        """
+        # Set the network on evaluation mode
         self.network.eval()
+        # Setup
         device = next(self.network.parameters()).device
-
         batches = input_shape[0]
-        #  Init sample
-        sample = randn(input_shape, device=device)
 
+        #  Init sample, pure noise
+        sample = randn(input_shape, device=device)
         result = []
 
+        # Generating loop
         for i in tqdm(reversed(range(0, self.total_timesteps)), desc='Inference loop',
                       total=self.total_timesteps):
             # Consider array of same timesteps given that inference is done in batches
             timesteps = torch.full(
                 (batches,), i, device=device, dtype=torch.long)
+            # Get denoised samples
             sample = self.backward_sample(sample, timesteps, i)
+            # Save samples at t
             result.append(sample.cpu())
 
+        # Convert list to tensor
         return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
 
     def double_inference_loop(self, input_shape: Tuple, time_step_offset: int) -> Tensor:
+        """
+        Generate an image as the function above, but start the denoising
+        procedure again using an already denoised sample
+        :param input_shape: Shape of the type [B,C,W,H]
+        :param time_step_offset: From which time step start to denoise again
+        :return Tensor of generated images at each times step of shape [T,B,C,W,H]
+        """
+        # Set the network on evaluation mode
         self.network.eval()
+        # Setup
         device = next(self.network.parameters()).device
-
         batches = input_shape[0]
-        #  Init sample
+        #  Init sample, pure random noise
         sample = randn(input_shape, device=device)
 
         result = []
+
+        # Construct a tensor of time steps considering the ones to be repeated
         timesteps = torch.cat(
             [torch.arange(0, time_step_offset), torch.arange(0, self.total_timesteps)])
-
+        # Generating loop
         for i in tqdm(reversed(timesteps), desc='Inference loop',
-                      total=self.total_timesteps):
+                      total=len(timesteps)):
             # Consider array of same timesteps given that inference is done in batches
             timesteps = torch.full(
                 (batches,), i, device=device, dtype=torch.long)
+            # Get denoised samples
             sample = self.backward_sample(sample, timesteps, i)
             result.append(sample.cpu())
         return torch.cat(result, dim=0).reshape(((len(result),) + input_shape))
 
     def save_model(self, results_folder, checkpoint: int):
+        """
+        :param results_folder: path where to save the model
+        :param checkpoint: epoch to be saved
+        """
         network_folder = Path(f"{results_folder}/network")
         network_folder.mkdir(parents=True, exist_ok=True)
         torch.save(self.network.state_dict(),
