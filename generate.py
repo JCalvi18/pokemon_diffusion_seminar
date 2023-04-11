@@ -4,7 +4,7 @@ from network import UnetV1, UnetV2, UnetV3, UnetV4
 from dataset import save_to_png, save_values
 from pathlib import Path
 from datetime import datetime
-from notebook_utils import animate
+from plot_utils import animate
 
 device = "cuda:0" if torch.cuda.is_available() else 'cpu'
 
