@@ -101,7 +101,8 @@ def plot_color_distribution(args, model, dataset, train_dataloader,
     else:
         plt.title("Color distribution of transformed original images")
     if results_folder is not None:
-        plt.savefig(f'{results_folder}/color_distribution_original_images.png',
+        name = 'color_distribution_normal_reference.png' if forward else 'color_distribution_original_images.png'        
+        plt.savefig(f'{results_folder}/{name}',
                     dpi=300, bbox_inches='tight')
     else:
         plt.show()
@@ -115,7 +116,7 @@ def generate_forward(model, train_dataloader, timesteps):
     return forward
 
 
-def animate(forward, results_folder=None):
+def animate(forward, results_folder=None, fps=10):
     np_transform = transforms.Compose([
         transforms.Lambda(lambda t: t.permute(0, 2, 3, 1)),  # BCHW to BHWC
         transforms.Lambda(lambda t: (t + 1) / 2),  # In range [0,1]
@@ -125,7 +126,21 @@ def animate(forward, results_folder=None):
     transformed = [np_transform(img)[0] for img in forward]
     if results_folder is not None:
         imageio.mimsave(f'{results_folder}/forward_animate.gif',
-                        transformed, fps=10)
+                        transformed, fps=fps)
     else:
         imageio.mimsave('forward_animate.gif',
-                        transformed, fps=10)
+                        transformed, fps=fps)
+
+def show_image(array):
+    
+    fig, ax = plt.subplots(nrows=2, ncols=2)
+    fig.suptitle('Generated pokemons')
+    # for b, img in enumerate(array):
+    for i, row in enumerate(ax):
+        for j, col in enumerate(row):
+            # col.set_title(i + j)
+            col.axis('off')
+            col.imshow(array[i + j])
+    plt.show()
+    
+    
