@@ -33,7 +33,7 @@ if __name__ == "__main__":
                         help="Random seed, defaults: ditto :)"),
 
     parser.add_argument("-sd", action="store_true", dest="scale_down",
-                        default=True, help="Scale down images")
+                        default=False, help="Scale down images")
 
     parser.add_argument("-rgba", action="store_true", dest="use_rgba",
                         default=False, help="Use RGBA during training")
