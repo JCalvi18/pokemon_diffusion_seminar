@@ -40,6 +40,9 @@ def train_loop(args):
         print(f'Epochs: {epochs}', file=f)
         print(f'Batch size: {batch_size}', file=f)
         print(f'U-Net version: {unet_version}', file=f)
+        print(f'Scaled: {resize_dataset}', file=f)
+        print(f'Using RGBA: {use_rgba}', file=f)
+
 
     channels = 4 if use_rgba else 3
 
