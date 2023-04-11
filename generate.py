@@ -17,7 +17,9 @@ def generate(args):
     total_timesteps = args.timesteps
     unet_version = args.unet_version
     offset = args.timestep_offset
+    resize_dataset = args.scale_down
     use_rgba = args.use_rgba
+    image_size = 32 if resize_dataset else 256
 
     torch.manual_seed(args.seed)
     if device == 'cuda:0':
@@ -34,7 +36,7 @@ def generate(args):
 
     model.load_model(load_path)
 
-    output_dim = (batch_size, 3, 256, 256)
+    output_dim = (batch_size, channels, image_size, image_size)
     results = model.inference_loop(output_dim)
     animate(results, 'backward', results_folder)
     save_to_png(results_folder, results[-1])
