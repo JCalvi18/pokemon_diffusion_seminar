@@ -67,7 +67,7 @@ def train_loop(args):
             loss.backward()
             optimizer.step()
 
-            if (epoch > 0 and epochs % save_epoch_every == 0) or epoch == epochs-1:
+            if (epoch > 0 and epoch % save_epoch_every == 0) or epoch == epochs-1:
                 model.save_model(results_folder, epoch+1)
 
     results_folder = Path(f"./results/gen/{datetime_stamp}/last")
