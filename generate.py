@@ -38,7 +38,7 @@ def generate(args):
 
     output_dim = (batch_size, channels, image_size, image_size)
     results = model.inference_loop(output_dim)
-    animate(results, 'backward', results_folder)
+    animate(results, 'backward', results_folder, fps=30)
     save_to_png(results_folder, results[-1])
     save_values(results_folder, results[-1])
 
