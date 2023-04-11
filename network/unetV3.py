@@ -16,9 +16,11 @@ class EncoderBlock(nn.Module):
         self.attention = ResAttention(in_channel, LinearAttention(in_channel))
         self.down = nn.Sequential(
             # Dimensions don't change only the number of channels increases
-            nn.Conv2d(in_channel, out_channel, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channel, out_channel,
+                      kernel_size=3, stride=1, padding=1),
             # Here dimensions scale by a factor of 2
-            nn.MaxPool2d(2, stride=2, padding=0) if not last_block else nn.Identity(),
+            nn.MaxPool2d(
+                2, stride=2, padding=0) if not last_block else nn.Identity(),
         )
 
     def forward(self, inputs, t):
@@ -44,8 +46,10 @@ class DecoderBlock(nn.Module):
         # in_channel size = size of down sampled features, out_channel size = size features before down sample
         # Given we are going to concatenate with the skip connections of the encoder block,
         # features without down sampling. Then, Input shape of the resnet block is = in_channel + out_channel
-        self.res1 = ResnetBlock(in_channel + out_channel, in_channel, time_emb_dim)
-        self.res2 = ResnetBlock(in_channel + out_channel, in_channel, time_emb_dim)
+        self.res1 = ResnetBlock(in_channel + out_channel,
+                                in_channel, time_emb_dim)
+        self.res2 = ResnetBlock(in_channel + out_channel,
+                                in_channel, time_emb_dim)
         self.attention = ResAttention(in_channel, LinearAttention(in_channel))
         self.up = nn.ConvTranspose2d(in_channel, out_channel, kernel_size=2, stride=2,
                                      padding=0) if not last_block else nn.Conv2d(in_channel, out_channel, 3, 1,
@@ -72,6 +76,7 @@ class Unet(nn.Module):
     """
     Bigger architecture with double resnet modules
     """
+
     def __init__(self, in_channel=3, out_channel=3):
         super().__init__()
         time_emb_dim = 32
@@ -85,7 +90,8 @@ class Unet(nn.Module):
             nn.Linear(time_emb_dim, time_emb_dim),
         )
 
-        self.init_conv = nn.Conv2d(in_channel, initial_channel_scale, 1, padding=0)
+        self.init_conv = nn.Conv2d(
+            in_channel, initial_channel_scale, 1, padding=0)
 
         # Encoder
         # In -> [B,32,256,256] Out -> [B,64,128,128]
@@ -117,10 +123,12 @@ class Unet(nn.Module):
         self.d3 = DecoderBlock(32, 16, time_emb_dim)
 
         # In -> [B,64,128,128] Out -> [B,32,256,256]
-        self.d4 = DecoderBlock(16, initial_channel_scale, time_emb_dim, last_block=True)
+        self.d4 = DecoderBlock(16, initial_channel_scale,
+                               time_emb_dim, last_block=True)
 
         # Two times because we will concatenate with a skip connection os the same size
-        self.last_res = ResnetBlock(initial_channel_scale * 2, initial_channel_scale, time_emb_dim)
+        self.last_res = ResnetBlock(
+            initial_channel_scale * 2, initial_channel_scale, time_emb_dim)
         self.last_conv = nn.Conv2d(initial_channel_scale, out_channel, 1)
 
     def forward(self, inputs, timestep):
@@ -147,6 +155,6 @@ class Unet(nn.Module):
         d4 = self.d4(d3, s1, t)
 
         x = torch.cat([d4, in_skip], dim=1)
-        x = self.last_res(x,t)
+        x = self.last_res(x, t)
 
         return self.last_conv(x)

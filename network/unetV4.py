@@ -14,7 +14,8 @@ class EncoderBlock(nn.Module):
         self.res = MinResnetBlock(in_channel, out_channel, time_emb_dim)
         self.down = nn.Sequential(
             # Dimensions scale down by a factor of 2
-            nn.MaxPool2d(2, stride=2, padding=0) if not last_block else nn.Identity(),
+            nn.MaxPool2d(
+                2, stride=2, padding=0) if not last_block else nn.Identity(),
         )
 
     def forward(self, inputs, t):
@@ -31,8 +32,9 @@ class EncoderBlock(nn.Module):
 class DecoderBlock(nn.Module):
     def __init__(self, in_channel, out_channel, time_emb_dim, last_block=False):
         super().__init__()
-        self.res = MinResnetBlock(out_channel *2, out_channel, time_emb_dim)
-        self.attention = AttentionBlock(out_channel, out_channel, out_channel // 2)
+        self.res = MinResnetBlock(out_channel * 2, out_channel, time_emb_dim)
+        self.attention = AttentionBlock(
+            out_channel, out_channel, out_channel // 2)
         self.up = nn.ConvTranspose2d(in_channel, out_channel, kernel_size=2, stride=2,
                                      padding=0) if not last_block else nn.Conv2d(in_channel, out_channel, 3, 1,
                                                                                  padding=1)
@@ -68,7 +70,8 @@ class Unet(nn.Module):
             nn.ReLU(),
         )
 
-        self.init_conv = nn.Conv2d(in_channel, initial_channel_scale, 1, padding=0)
+        self.init_conv = nn.Conv2d(
+            in_channel, initial_channel_scale, 1, padding=0)
 
         # Encoder
         # In -> [B,32,256,256] Out -> [B,64,128,128]
@@ -102,7 +105,7 @@ class Unet(nn.Module):
         self.d4 = DecoderBlock(128, 64, time_emb_dim, last_block=False)
 
         # Two times because we will concatenate with a skip connection os the same size
-        self.last_res = MinResnetBlock(64 , initial_channel_scale, time_emb_dim)
+        self.last_res = MinResnetBlock(64, initial_channel_scale, time_emb_dim)
         self.last_conv = nn.Conv2d(initial_channel_scale*2, out_channel, 1)
 
     def forward(self, inputs, timestep):
