@@ -2,7 +2,10 @@ from torch import nn
 import math
 import torch
 
-
+'''
+The postion embeddings are used to allow the model to differ to differ between different timesteps. 
+The implementation is from https://machinelearningmastery.com/a-gentle-introduction-to-positional-encoding-in-transformer-models-part-1/
+'''
 class SinusoidalPositionEmbeddings (nn.Module):
     def __init__(self, dim):
         super().__init__()
@@ -18,7 +21,9 @@ class SinusoidalPositionEmbeddings (nn.Module):
         embeddings = torch.cat((embeddings.sin(), embeddings.cos()), dim=-1)
         return embeddings
 
-
+'''
+The encoder block applies a adds a pooling layer to the operations of the conv-block.
+'''
 class EncoderBlock (nn.Module):
     def __init__(self, in_c, out_c, time_emb_dim):
         super().__init__()
@@ -32,6 +37,7 @@ class EncoderBlock (nn.Module):
         return x, p
 
 
+'''The Decoder Block alternates between a layers for upsampling and a convolutional layer.'''
 class DecoderBlock (nn.Module):
     def __init__(self, in_c, out_c, time_emb_dim):
         super().__init__()
@@ -45,7 +51,9 @@ class DecoderBlock (nn.Module):
         x = self.conv(x, t)
         return x
 
-
+'''
+Each Convolutional Block implements a sequence of convolutional layers, batch normalizations and relu activations and adds the time embedding as well.
+''' 
 class ConvBlock (nn.Module):
     def __init__(self, in_c, out_c, time_emb_dim):
         super().__init__()
@@ -74,21 +82,21 @@ class Unet (nn.Module):
         super().__init__()
         time_emb_dim = 32
 
-        # time embeddings
+       '''time embeddings'''
         self.time_mlp = nn.Sequential(
             SinusoidalPositionEmbeddings(time_emb_dim),
             nn.Linear(time_emb_dim, time_emb_dim),
             nn.ReLU()
         )
 
-        # encoder
+        '''encoder'''
         self.e1 = EncoderBlock(in_channels, 64, time_emb_dim)
         self.e2 = EncoderBlock(64, 128, time_emb_dim)
         self.e3 = EncoderBlock(128, 256, time_emb_dim)
         self.e4 = EncoderBlock(256, 512, time_emb_dim)
-        # bridge
+        '''bridge'''
         self.b = ConvBlock(512, 1024, time_emb_dim)
-        # decoder
+       '''decoder'''
         self.d1 = DecoderBlock(1024, 512, time_emb_dim)
         self.d2 = DecoderBlock(512, 256, time_emb_dim)
         self.d3 = DecoderBlock(256, 128, time_emb_dim)
@@ -97,15 +105,15 @@ class Unet (nn.Module):
         self.outputs = nn.Conv2d(64, out_channels, kernel_size=1, padding=0)
 
     def forward(self, inputs, timestep):
-        # encoder
+        '''encoder'''
         t = self.time_mlp(timestep)
         s1, p1 = self.e1(inputs, t)
         s2, p2 = self.e2(p1, t)
         s3, p3 = self.e3(p2, t)
         s4, p4 = self.e4(p3, t)
-        # bridge
+        '''bridge'''
         b = self.b(p4, t)
-        # decoder
+        '''decoder'''
         d1 = self.d1(b, s4, t)
         d2 = self.d2(d1, s3, t)
         d3 = self.d3(d2, s2, t)
