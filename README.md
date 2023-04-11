@@ -47,31 +47,9 @@ services:
 ```
 
 ## For reviewers
-### Folder Structure
-The file structure of the project is as follows:
-```
-├── dataset
-│   ├── pokemonDataset.py  --> Load the images
-│   └── utils.py --> Prepare the trainloader
-├── generate.py --> Generate based on trained model
-├── main.py --> ENTRYPOINT 
-├── model.py --> Forward and backward process
-├── model_utils.py --> Cumulative variables
-├── network --> Variations of the Unet
-│   ├── attention.py
-│   ├── __init__.py
-│   ├── positional.py
-│   ├── resNet.py
-│   ├── unetV1.py 
-│   ├── unetV2.py
-│   ├── unetV3.py
-│   └── unetV4.py
-├── notebook.ipynb --> File with our proofs
-├── notebook_utils.py 
-├── plot_utils.py
-├── README.md
-├── results
-└── train.py --> Training loop
-```
+Check the files on the `results/proof` folder there you'll find all the required files. The folders `v1`, `v2` , `v3` , `v4` , `v1_upsampled` correspond to the resutls obtained using different U-Net. For a general overview of our results you can also check the `notebook.ipynp` notebook with a summary of the proyect.
+
+
+
 
 
