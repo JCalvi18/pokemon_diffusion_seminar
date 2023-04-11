@@ -21,18 +21,57 @@ Proyect for the seminar "Deep Generative Diffusion Models" - Saarland University
     ```
 - Install additionall libraries
   ```
-    conda install matplotlib tqdm
-    conda install -c conda-forge einops
-    pip install seaborn imageio
+    pip install tqdm matplotlib einops seaborn imageio
     ```
 
 ### Further considerations
 - [Download](https://github.com/gerritgr/pokemon_diffusion) the project git and place the `pokemon` folder at the root level of the project.
 
-Additionally you can download a docker image of our proyect 
-TODO
+### Docker?
+You can use our docker image to train your own model, use our sample `docker-compose.yml` file, and be sure to place the folder of the project at the same level as this file.
+```docker-compose
+services:
+  torch:
+    image: tarkusjc/diffusion:torch-pokemon
+    shm_size: 7gb
+    volumes:
+      - ./pokemon_diffusion_seminar:/project:Z
+    working_dir: /project
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+```
 
-## Objectives 
-- Implements Forward pass (Noiser)
-- Implement U-NET
-- Define Loss w.r.t. the paper
+## For reviewers
+### Folder Structure
+The file structure of the project is as follows:
+```
+├── dataset
+│   ├── pokemonDataset.py  --> Load the images
+│   └── utils.py --> Prepare the trainloader
+├── generate.py --> Generate based on trained model
+├── main.py --> ENTRYPOINT 
+├── model.py --> Forward and backward process
+├── model_utils.py --> Cumulative variables
+├── network --> Variations of the Unet
+│   ├── attention.py
+│   ├── __init__.py
+│   ├── positional.py
+│   ├── resNet.py
+│   ├── unetV1.py 
+│   ├── unetV2.py
+│   ├── unetV3.py
+│   └── unetV4.py
+├── notebook.ipynb --> File with our proofs
+├── notebook_utils.py 
+├── plot_utils.py
+├── README.md
+├── results
+└── train.py --> Training loop
+```
+
+
